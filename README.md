@@ -13,8 +13,7 @@ Film Reviews is a web application where users can browse movies, read reviews, a
 
 ## Tools
 
-- Black (formatter)
-- Ruff (linter)
+- Ruff (linter and formatter)
 - Pytest (testing)
 - Pytest-Cov (coverage)
 
@@ -23,4 +22,4 @@ Film Reviews is a web application where users can browse movies, read reviews, a
 ```bash
 uv venv
 source .venv/bin/activate
-uv pip install black ruff pytest pytest-cov
+uv sync

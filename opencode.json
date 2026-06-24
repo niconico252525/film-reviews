@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/opencode.json",
+  "project": "film-reviews",
+  "description": "Django web application for browsing movies and submitting reviews",
+  "language": "python",
+  "framework": "django",
+  "testRunner": "pytest",
+  "lint": ["ruff check ."],
+  "format": ["ruff format ."],
+  "typecheck": ["python manage.py check"],
+  "customInstructions": {
+    "review": "Check models.py, views.py, services.py, forms.py, and tests when making changes.",
+    "test": "Run 'pytest' to verify changes. Add or update tests in tests/ mirroring the app/ structure.",
+    "migration": "Run 'python manage.py makemigrations && python manage.py migrate' after model changes."
+  },
+  "agents": {
+    "*": {
+      "environmentInstructions": "Read AGENTS.md in the project root for complete project conventions."
+    }
+  }
+}

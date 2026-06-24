@@ -8,9 +8,22 @@ __pycache__/
 # Pytest
 .pytest_cache/
 
+# Ruff
+.ruff_cache/
+
 # Coverage
 .coverage
 htmlcov/
 
+# Node (opencode plugin)
+.opencode/node_modules/
+.opencode/package-lock.json
+
 # VS Code
 .vscode/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
