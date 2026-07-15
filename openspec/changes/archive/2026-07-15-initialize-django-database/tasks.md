@@ -18,5 +18,5 @@
 ## 4. Documentation and delivery
 
 - [x] 4.1 Update the project README/specification with setup commands and the database design.
-- [ ] 4.2 Verify the implementation against this change and archive it into the living OpenSpec specification.
-- [ ] 4.3 Commit with the GitHub issue-closing keyword, open and review the pull request, then merge and clean up the feature branch.
+- [x] 4.2 Verify the implementation against this change and archive it into the living OpenSpec specification.
+- [x] 4.3 Commit with the GitHub issue-closing keyword, open and review the pull request, then merge and clean up the feature branch.
