@@ -1,0 +1,17 @@
+schema: spec-driven
+
+context: |
+  Film Reviews is an early-stage Django application.
+  Tech stack: Python >=3.9, Django >=4.2,<5.0, SQLite, pytest, and Ruff.
+  Keep business logic in services.py, keep views focused on request handling,
+  and mirror application code with tests under tests/.
+
+rules:
+  specs:
+    - Use SHALL or MUST for normative requirements.
+    - Include testable WHEN/THEN scenarios.
+    - Capture model relationships, deletion behavior, constraints, and string representations.
+  design:
+    - Include schema decisions, alternatives, migration plan, and rollback.
+  tasks:
+    - Include migrations, unit tests, Django system checks, linting, and documentation.
