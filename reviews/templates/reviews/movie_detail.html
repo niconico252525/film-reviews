@@ -1,0 +1,39 @@
+{% extends "reviews/base.html" %}
+
+{% block title %}{{ movie.title }} | Film Reviews{% endblock %}
+
+{% block content %}
+<article>
+    <h1>{{ movie.title }}</h1>
+    {% if movie.release_date %}
+        <p>Released {{ movie.release_date|date:"Y-m-d" }}</p>
+    {% endif %}
+    <p>{{ movie.synopsis|default:"No synopsis is available." }}</p>
+    <p>
+        Average rating:
+        {% if average_rating is not None %}
+            {{ average_rating|floatformat:1 }}/5
+        {% else %}
+            Not yet rated
+        {% endif %}
+    </p>
+</article>
+
+{% if user.is_authenticated %}
+    <p><a href="{% url 'reviews:review_create' movie.id %}">Write or update your review</a></p>
+{% else %}
+    <p><a href="{% url 'login' %}?next={% url 'reviews:review_create' movie.id %}">Log in to review this movie</a></p>
+{% endif %}
+
+<section>
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+        <article>
+            <h3>{{ review.author.username }} — {{ review.rating }}/5</h3>
+            <p>{{ review.body }}</p>
+        </article>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+</section>
+{% endblock %}

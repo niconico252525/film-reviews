@@ -2,12 +2,22 @@
 name = "film-reviews"
 version = "0.1.0"
 requires-python = ">=3.9"
+dependencies = [
+    "django>=4.2,<5.0",
+]
 
-[tool.black]
-line-length = 88
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=7.0",
+    "pytest-django>=4.8",
+    "ruff>=0.15.0",
+]
 
 [tool.ruff]
 line-length = 88
 
 [tool.pytest.ini_options]
-addopts = "--cov=. --cov-report=term"
+DJANGO_SETTINGS_MODULE = "app.settings"
+addopts = "--cov=app --cov=reviews --cov-report=term-missing"
+testpaths = ["tests"]

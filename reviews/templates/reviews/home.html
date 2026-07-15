@@ -1,0 +1,20 @@
+{% extends "reviews/base.html" %}
+
+{% block title %}Home | Film Reviews{% endblock %}
+
+{% block content %}
+<h1>Film Reviews</h1>
+<p>Browse movies and discover what other viewers thought.</p>
+<p><a href="{% url 'reviews:movie_list' %}">Browse all movies</a></p>
+
+<h2>Recently added</h2>
+<ul>
+    {% for movie in recent_movies %}
+        <li>
+            <a href="{% url 'reviews:movie_detail' movie.id %}">{{ movie }}</a>
+        </li>
+    {% empty %}
+        <li>No movies have been added yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
