@@ -1,5 +1,9 @@
+dj-database-url>=2.2,<4.0
 django>=4.2,<5.0
+gunicorn>=23.0,<24.0
+psycopg[binary]>=3.2,<4.0
 pytest>=8.0
 pytest-cov>=7.0
 pytest-django>=4.8
 ruff>=0.15.0
+whitenoise[brotli]>=6.8,<6.12
