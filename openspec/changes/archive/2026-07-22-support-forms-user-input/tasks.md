@@ -18,4 +18,4 @@
 
 - [x] 4.1 Add form, service, and request tests for valid and invalid user input.
 - [x] 4.2 Run pytest, Django checks, migration checks, Ruff, and strict OpenSpec validation.
-- [ ] 4.3 Refactor findings, archive the OpenSpec change, and complete the GitHub PR workflow.
+- [x] 4.3 Refactor findings, archive the OpenSpec change, and complete the GitHub PR workflow.
