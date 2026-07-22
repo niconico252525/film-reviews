@@ -19,6 +19,7 @@ Django admin integration, validated forms, and tested rating aggregation.
 - Ruff (linter and formatter)
 - Pytest (testing)
 - Pytest-Cov (coverage)
+- HTMX 2.0.10 (server-rendered partial updates)
 
 ## Setup
 
@@ -66,7 +67,7 @@ All application responses are server-rendered HTML. URL names use the
 | Method and path | Callable | Arguments | Return value |
 | --- | --- | --- | --- |
 | `GET /` | `reviews.views.home` | None | HTTP 200 using `reviews/home.html`; context contains up to five `recent_movies`. |
-| `GET /movies/` | `reviews.views.movie_list` | Optional query argument `q` (string) | HTTP 200 using `reviews/movie_list.html`; context contains `movies` and the normalized `query`. A non-blank query performs case-insensitive partial-title matching. |
+| `GET /movies/` | `reviews.views.movie_list` | Optional query argument `q` (string); optional request header `HX-Request: true` | A normal request returns HTTP 200 using `reviews/movie_list.html`. An HTMX request returns only `reviews/partials/movie_results.html`. Both contain the same validated, case-insensitive partial-title matches and vary on `HX-Request`. |
 | `GET /accounts/register/` | `reviews.views.register_account` | None | Anonymous users receive HTTP 200 using `registration/register.html`. Authenticated users receive HTTP 302 to home. |
 | `POST /accounts/register/` | `reviews.views.register_account` | Form `username`, required `email`, `password1`, and `password2` | Valid input creates and signs in the user, then returns HTTP 302 to home. Invalid input returns HTTP 200 with field errors and creates no user. |
 | `GET /movies/<movie_id>/` | `reviews.views.movie_detail` | `movie_id` (integer primary key) | HTTP 200 using `reviews/movie_detail.html` with `movie`, `average_rating`, and `reviews`; HTTP 404 when the movie does not exist. |
@@ -119,8 +120,29 @@ Accessibility features include:
 - form help and error text connected with `aria-describedby`;
 - a reduced-motion media query that removes non-essential transitions.
 
-The interface uses no external fonts, scripts, CSS frameworks, or image
-requests, so all presentation is served with the application.
+The interface uses no external fonts, CSS frameworks, or image requests. HTMX
+2.0.10 is loaded from jsDelivr with a pinned version and subresource integrity
+hash. Search remains fully functional through normal GET submission when that
+script is unavailable.
+
+## HTMX Interaction
+
+The movie list provides the first dynamic interaction while keeping the server
+responsible for validation, filtering, and HTML rendering:
+
+| Question | Design |
+| --- | --- |
+| What updates dynamically? | Matching movie cards and their result summary. |
+| What triggers the update? | Changed search input after a 350ms pause, the native search event, or form submission. |
+| Which page region changes? | Only the contents of `#movie-results`; navigation, the search field, and the rest of the document remain in place. |
+| What does the browser request? | `GET /movies/?q=<title>` with `HX-Request: true`. The current query is pushed into browser history. |
+| What does the server return? | `reviews/partials/movie_results.html`, containing the result heading, count, movie cards, empty state, or validation feedback. |
+| What happens during a request? | The newest query replaces an older in-flight search and an accessible “Updating results…” indicator is revealed. |
+| What is the fallback? | The same form performs a normal GET and receives the complete page when HTMX is unavailable. |
+
+The response includes `Vary: HX-Request` so caches keep full documents and
+partial fragments separate. No JSON endpoint or duplicate search logic is
+introduced.
 
 ## Quality Checks
 

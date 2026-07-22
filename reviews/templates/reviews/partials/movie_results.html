@@ -1,0 +1,48 @@
+{% if is_htmx and search_form.errors %}
+    <div class="form-error-summary" role="alert" aria-labelledby="search-errors-title" tabindex="-1">
+        <h2 id="search-errors-title">Please correct the search</h2>
+        <ul>
+            {% for field in search_form.visible_fields %}
+                {% for error in field.errors %}
+                    <li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<div class="section-heading">
+    <div>
+        <p class="eyebrow">Catalog</p>
+        <h2 id="results-heading">
+            {% if search_form.errors %}Search needs attention{% elif query %}Search results{% else %}All movies{% endif %}
+        </h2>
+    </div>
+    {% if not search_form.errors %}
+        <p class="results-summary">
+            {{ movies|length }} movie{{ movies|length|pluralize }}{% if query %} matching “{{ query }}”{% endif %}
+        </p>
+    {% endif %}
+</div>
+
+<ul class="card-grid" role="list">
+    {% for movie in movies %}
+        <li>
+            <article class="movie-card">
+                <div class="movie-card__art" aria-hidden="true">{{ movie.title|first|upper }}</div>
+                <div class="movie-card__body">
+                    {% if movie.release_date %}
+                        <p class="movie-card__meta"><time datetime="{{ movie.release_date|date:'Y-m-d' }}">{{ movie.release_date|date:"Y" }}</time></p>
+                    {% else %}
+                        <p class="movie-card__meta">Release date unknown</p>
+                    {% endif %}
+                    <h3><a href="{% url 'reviews:movie_detail' movie.id %}">{{ movie.title }}</a></h3>
+                </div>
+            </article>
+        </li>
+    {% empty %}
+        <li class="empty-state">
+            {% if search_form.errors %}Correct the search field to see results.{% else %}No movies found. Try another title.{% endif %}
+        </li>
+    {% endfor %}
+</ul>

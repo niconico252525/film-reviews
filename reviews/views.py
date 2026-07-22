@@ -3,6 +3,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET, require_http_methods
+from django.views.decorators.vary import vary_on_headers
 
 from reviews.forms import MovieSearchForm, RegistrationForm, ReviewForm
 from reviews.models import Movie
@@ -26,8 +27,10 @@ def home(request):
 
 
 @require_GET
+@vary_on_headers("HX-Request")
 def movie_list(request):
     """Show all movies or title matches for the optional ``q`` argument."""
+    is_htmx = request.headers.get("HX-Request") == "true"
     form = MovieSearchForm(request.GET or None)
     query = ""
     movies = search_movies()
@@ -38,11 +41,16 @@ def movie_list(request):
         else:
             movies = ()
 
-    return render(
-        request,
-        "reviews/movie_list.html",
-        {"movies": movies, "query": query, "search_form": form},
+    context = {
+        "movies": movies,
+        "query": query,
+        "search_form": form,
+        "is_htmx": is_htmx,
+    }
+    template_name = (
+        "reviews/partials/movie_results.html" if is_htmx else "reviews/movie_list.html"
     )
+    return render(request, template_name, context)
 
 
 @require_http_methods(["GET", "POST"])
