@@ -14,7 +14,8 @@ movie detail, and authenticated review views with server-rendered templates.
 Basic account registration now exists, while dedicated profile flows still
 need to be built. Authentication uses Django's built-in user model and views.
 The public templates share a responsive CSS design system and accessible page
-and form structure.
+and form structure. Movie title search uses an HTMX results partial with a
+normal GET fallback.
 
 Main features:
 
