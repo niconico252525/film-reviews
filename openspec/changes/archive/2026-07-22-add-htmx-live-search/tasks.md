@@ -15,4 +15,4 @@
 - [x] 3.1 Document the trigger, target, request, response, fallback, and dependency.
 - [x] 3.2 Add tests for full responses, partial responses, filtering, validation, caching, and markup.
 - [x] 3.3 Run pytest, Django checks, migration checks, Ruff, and strict OpenSpec validation.
-- [ ] 3.4 Review the final interaction, archive OpenSpec, and complete the GitHub PR workflow.
+- [x] 3.4 Review the final interaction, archive OpenSpec, and complete the GitHub PR workflow.
