@@ -3,18 +3,23 @@
 {% block title %}Log in | Film Reviews{% endblock %}
 
 {% block content %}
-<h1>Log in</h1>
+<div class="page-narrow">
+    <header class="page-heading">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Log in</h1>
+        <p>Continue reviewing movies and sharing your perspective.</p>
+    </header>
 
-{% if form.errors %}
-    <p>Your username and password did not match. Please try again.</p>
-{% endif %}
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% if next %}
-        <input type="hidden" name="next" value="{{ next }}">
-    {% endif %}
-    <button type="submit">Log in</button>
-</form>
+    <section class="surface" aria-label="Login form">
+        <form class="stacked-form" method="post">
+            {% csrf_token %}
+            {% include "reviews/includes/form_fields.html" with form=form %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            <button class="button button--primary button--full" type="submit">Log in</button>
+        </form>
+        <p class="surface__footer">New to Film Reviews? <a href="{% url 'reviews:register' %}">Create an account</a>.</p>
+    </section>
+</div>
 {% endblock %}

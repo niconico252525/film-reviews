@@ -1,38 +1,72 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Browse movies and share thoughtful reviews.">
     <title>{% block title %}Film Reviews{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'reviews/styles.css' %}">
 </head>
 <body>
-    <header>
-        <nav aria-label="Main navigation">
-            <a href="{% url 'reviews:home' %}">Film Reviews</a>
-            <a href="{% url 'reviews:movie_list' %}">Movies</a>
-            {% if user.is_authenticated %}
-                <span>Signed in as {{ user.username }}</span>
-                <form action="{% url 'logout' %}" method="post" style="display: inline">
-                    {% csrf_token %}
-                    <button type="submit">Log out</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Log in</a>
-                <a href="{% url 'reviews:register' %}">Create account</a>
-            {% endif %}
-        </nav>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="container nav-shell">
+            <a class="site-brand" href="{% url 'reviews:home' %}" aria-label="Film Reviews home">
+                <span class="site-brand__mark" aria-hidden="true">FR</span>
+                <span>Film Reviews</span>
+            </a>
+
+            {% with current_url=request.resolver_match.url_name %}
+            <nav class="site-nav" aria-label="Main navigation">
+                <ul class="nav-list" role="list">
+                    <li>
+                        <a href="{% url 'reviews:home' %}"{% if current_url == "home" %} aria-current="page"{% endif %}>Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'reviews:movie_list' %}"{% if current_url == "movie_list" or current_url == "movie_detail" or current_url == "review_create" %} aria-current="page"{% endif %}>Movies</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <nav class="account-nav" aria-label="Account navigation">
+                {% if user.is_authenticated %}
+                    <span class="account-name">Signed in as <strong>{{ user.username }}</strong></span>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="button button--quiet button--small" type="submit">Log out</button>
+                    </form>
+                {% else %}
+                    <a class="button button--quiet button--small" href="{% url 'login' %}"{% if current_url == "login" %} aria-current="page"{% endif %}>Log in</a>
+                    <a class="button button--primary button--small" href="{% url 'reviews:register' %}"{% if current_url == "register" %} aria-current="page"{% endif %}>Create account</a>
+                {% endif %}
+            </nav>
+            {% endwith %}
+        </div>
     </header>
 
     {% if messages %}
-        <ul aria-label="Messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+        <div class="message-region" role="status" aria-live="polite" aria-atomic="true">
+            <ul class="container message-list" role="list">
+                {% for message in messages %}
+                    <li class="message message--{{ message.tags|default:'info' }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
 
-    <main>
-        {% block content %}{% endblock %}
+    <main id="main-content" class="site-main" tabindex="-1">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p><strong>Film Reviews</strong></p>
+            <p>Discover films. Share what stayed with you.</p>
+        </div>
+    </footer>
 </body>
 </html>

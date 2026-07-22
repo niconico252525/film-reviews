@@ -3,24 +3,51 @@
 {% block title %}Movies | Film Reviews{% endblock %}
 
 {% block content %}
-<h1>Movies</h1>
+<header class="page-heading">
+    <p class="eyebrow">Explore the catalog</p>
+    <h1>Movies</h1>
+    <p>Search by title or browse every movie currently available.</p>
+</header>
 
-<form action="{% url 'reviews:movie_list' %}" method="get" role="search">
-    {{ search_form.as_p }}
-    <button type="submit">Search</button>
-</form>
+<section class="search-panel" aria-labelledby="search-heading">
+    <h2 id="search-heading">Find a movie</h2>
+    <form class="search-form" action="{% url 'reviews:movie_list' %}" method="get" role="search">
+        <div class="search-form__fields">
+            {% include "reviews/includes/form_fields.html" with form=search_form %}
+        </div>
+        <button class="button button--primary" type="submit">Search</button>
+    </form>
+</section>
 
-{% if query %}
-    <p>Results for “{{ query }}”</p>
-{% endif %}
+<section class="section-block" aria-labelledby="results-heading">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Catalog</p>
+            <h2 id="results-heading">{% if query %}Search results{% else %}All movies{% endif %}</h2>
+        </div>
+        {% if query %}
+            <p class="results-summary" aria-live="polite">Results for “{{ query }}”</p>
+        {% endif %}
+    </div>
 
-<ul>
-    {% for movie in movies %}
-        <li>
-            <a href="{% url 'reviews:movie_detail' movie.id %}">{{ movie }}</a>
-        </li>
-    {% empty %}
-        <li>No movies found.</li>
-    {% endfor %}
-</ul>
+    <ul class="card-grid" role="list">
+        {% for movie in movies %}
+            <li>
+                <article class="movie-card">
+                    <div class="movie-card__art" aria-hidden="true">{{ movie.title|first|upper }}</div>
+                    <div class="movie-card__body">
+                        {% if movie.release_date %}
+                            <p class="movie-card__meta"><time datetime="{{ movie.release_date|date:'Y-m-d' }}">{{ movie.release_date|date:"Y" }}</time></p>
+                        {% else %}
+                            <p class="movie-card__meta">Release date unknown</p>
+                        {% endif %}
+                        <h3><a href="{% url 'reviews:movie_detail' movie.id %}">{{ movie.title }}</a></h3>
+                    </div>
+                </article>
+            </li>
+        {% empty %}
+            <li class="empty-state">No movies found. Try another title.</li>
+        {% endfor %}
+    </ul>
+</section>
 {% endblock %}

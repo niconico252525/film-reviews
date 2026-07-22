@@ -90,11 +90,37 @@ only for movie search because it is read-only and should remain bookmarkable.
 All form pages extend `reviews/base.html`; the shared layout supplies
 navigation, authentication actions, messages, and the main content region.
 
-Minimal templates are intentional for this exercise; profile pages,
-pagination, advanced search, email verification, and final styling remain
-future features. The current behavioral contract lives in
+Profile pages, pagination, advanced search, email verification, and richer
+branding remain future features. The current behavioral contract lives in
 `openspec/specs/web-interface/spec.md`; archived OpenSpec changes retain the
 decision history.
+
+## Interface Design
+
+All public pages extend `reviews/base.html`. The shared template provides the
+site header, labeled navigation, live message region, one main landmark, and
+footer. Repeated form fields and linked error summaries are rendered through a
+shared include so login, registration, search, and review pages expose
+consistent labels and feedback.
+
+Presentation lives in `reviews/static/reviews/styles.css`. The stylesheet uses
+system fonts, reusable color and spacing tokens, fluid containers, card and
+surface components, and mobile-first layouts. Breakpoints at 38, 48, and 64
+rem progressively enhance form actions, navigation, movie details, and card
+grids without changing the HTML structure.
+
+Accessibility features include:
+
+- a keyboard skip link targeting the main content;
+- high-contrast `:focus-visible` indicators and minimum-size controls;
+- `aria-current` on the active navigation destination;
+- semantic headings, lists, articles, landmarks, and `time` elements;
+- live status messages and alert error summaries linked to invalid fields;
+- form help and error text connected with `aria-describedby`;
+- a reduced-motion media query that removes non-essential transitions.
+
+The interface uses no external fonts, scripts, CSS frameworks, or image
+requests, so all presentation is served with the application.
 
 ## Quality Checks
 

@@ -3,13 +3,23 @@
 {% block title %}Review {{ movie.title }} | Film Reviews{% endblock %}
 
 {% block content %}
-<h1>{% if is_update %}Update{% else %}Write{% endif %} your review of {{ movie.title }}</h1>
+<div class="page-narrow">
+    <header class="page-heading">
+        <p class="eyebrow">Your perspective</p>
+        <h1>{% if is_update %}Update{% else %}Write{% endif %} your review</h1>
+        <p>Share your rating and thoughts on <strong>{{ movie.title }}</strong>.</p>
+    </header>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save review</button>
-</form>
-
-<p><a href="{% url 'reviews:movie_detail' movie.id %}">Cancel</a></p>
+    <section class="surface" aria-label="Review form">
+        <p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
+        <form class="stacked-form" method="post">
+            {% csrf_token %}
+            {% include "reviews/includes/form_fields.html" with form=form %}
+            <div class="form-actions">
+                <button class="button button--primary" type="submit">Save review</button>
+                <a class="button button--quiet" href="{% url 'reviews:movie_detail' movie.id %}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</div>
 {% endblock %}
