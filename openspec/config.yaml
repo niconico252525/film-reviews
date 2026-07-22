@@ -2,7 +2,8 @@ schema: spec-driven
 
 context: |
   Film Reviews is an early-stage Django application.
-  Tech stack: Python >=3.9, Django >=4.2,<5.0, SQLite, pytest, and Ruff.
+  Tech stack: Python >=3.9, Django >=4.2,<5.0, SQLite for development,
+  Render PostgreSQL for production, Gunicorn, WhiteNoise, pytest, and Ruff.
   Keep business logic in services.py, keep views focused on request handling,
   and mirror application code with tests under tests/.
 
