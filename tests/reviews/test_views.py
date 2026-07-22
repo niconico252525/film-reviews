@@ -66,6 +66,12 @@ def test_movie_list_rejects_oversized_query_without_returning_movies(client, mov
     assert movie.title.encode() not in response.content
 
 
+def test_movie_list_rejects_post_requests(client):
+    response = client.post(reverse("reviews:movie_list"), {"q": "Alien"})
+
+    assert response.status_code == 405
+
+
 def test_movie_detail_renders_rating_and_reviews(client, movie, user):
     review = Review.objects.create(
         movie=movie,
@@ -242,6 +248,8 @@ def test_invalid_registration_redisplays_errors_without_creating_user(client, us
         "password2",
     }
     assert get_user_model().objects.count() == 1
+    assert b"not-an-email" in response.content
+    assert b"X9!mQ2#vL7$p" not in response.content
 
 
 def test_authenticated_user_is_redirected_away_from_registration(client, user):
@@ -251,6 +259,12 @@ def test_authenticated_user_is_redirected_away_from_registration(client, user):
 
     assert response.status_code == 302
     assert response.url == reverse("reviews:home")
+
+
+def test_registration_rejects_unsupported_http_method(client):
+    response = client.put(reverse("reviews:register"))
+
+    assert response.status_code == 405
 
 
 def test_logout_redirects_home(client, user):

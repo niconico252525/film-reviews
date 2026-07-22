@@ -42,6 +42,11 @@ input MUST display errors and MUST NOT execute a title search.
 - **WHEN** a user submits a `q` value longer than 255 characters
 - **THEN** the application returns HTTP 200 with a form error and no movie results
 
+#### Scenario: Reject a non-GET search request
+
+- **WHEN** a client sends POST to `/movies/`
+- **THEN** the application returns HTTP 405 without processing search input
+
 ### Requirement: Submit or update a review
 
 The application SHALL expose `/movies/<movie_id>/reviews/new/` to authenticated

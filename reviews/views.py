@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_GET, require_http_methods
 
 from reviews.forms import MovieSearchForm, RegistrationForm, ReviewForm
 from reviews.models import Movie
@@ -25,6 +25,7 @@ def home(request):
     )
 
 
+@require_GET
 def movie_list(request):
     """Show all movies or title matches for the optional ``q`` argument."""
     form = MovieSearchForm(request.GET or None)
