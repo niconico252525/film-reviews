@@ -11,8 +11,8 @@ the initial `reviews` domain app exist. `reviews` provides the `Movie` and
 `Review` models, Django admin registration, an average-rating service, and the
 initial migration. It also provides basic function-based home, movie list,
 movie detail, and authenticated review views with server-rendered templates.
-Dedicated registration and profile flows still need to be built;
-authentication currently uses Django's built-in user model and views.
+Basic account registration now exists, while dedicated profile flows still
+need to be built. Authentication uses Django's built-in user model and views.
 
 Main features:
 

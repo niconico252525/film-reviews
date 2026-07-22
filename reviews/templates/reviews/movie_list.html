@@ -6,8 +6,7 @@
 <h1>Movies</h1>
 
 <form action="{% url 'reviews:movie_list' %}" method="get" role="search">
-    <label for="movie-search">Search by title</label>
-    <input id="movie-search" type="search" name="q" value="{{ query }}">
+    {{ search_form.as_p }}
     <button type="submit">Search</button>
 </form>
 

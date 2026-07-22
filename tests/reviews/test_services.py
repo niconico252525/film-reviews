@@ -9,6 +9,7 @@ from reviews.models import Movie, Review
 from reviews.services import (
     get_movie_average_rating,
     get_recent_movies,
+    register_user,
     save_review,
     search_movies,
 )
@@ -71,6 +72,18 @@ def test_search_movies_matches_partial_title_case_insensitively():
     Movie.objects.create(title="Alien")
 
     assert list(search_movies("  SPIRIT  ")) == [spirited_away]
+
+
+def test_register_user_persists_email_and_hashed_password():
+    user = register_user(
+        username="registered-reviewer",
+        email="reviewer@example.com",
+        password="X9!mQ2#vL7$p",
+    )
+
+    assert user.email == "reviewer@example.com"
+    assert user.check_password("X9!mQ2#vL7$p")
+    assert get_user_model().objects.filter(username="registered-reviewer").exists()
 
 
 def test_save_review_creates_then_updates_one_review():
