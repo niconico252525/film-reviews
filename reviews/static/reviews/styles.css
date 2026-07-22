@@ -208,17 +208,17 @@ h3 {
 
 .account-name {
     display: none;
+    max-width: 14rem;
+    overflow: hidden;
     color: var(--color-muted);
     font-size: 0.9rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .site-main {
     min-height: calc(100vh - 13rem);
     padding-block: clamp(2.5rem, 7vw, 5.5rem);
-}
-
-.site-main:focus {
-    outline: none;
 }
 
 .site-footer {
