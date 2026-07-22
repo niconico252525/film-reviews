@@ -1,3 +1,4 @@
+import hashlib
 import os
 from pathlib import Path
 
@@ -28,9 +29,24 @@ DEVELOPMENT_SECRET_KEY = "django-insecure-change-me-in-production"
 IS_RENDER = env_flag("RENDER")
 DEBUG = env_flag("DJANGO_DEBUG", default=not IS_RENDER)
 
-SECRET_KEY = os.environ.get("SECRET_KEY", DEVELOPMENT_SECRET_KEY)
+secret_key_seed = os.environ.get("SECRET_KEY_SEED", "")
+if not DEBUG and secret_key_seed and len(secret_key_seed) < 32:
+    raise ImproperlyConfigured("SECRET_KEY_SEED must contain at least 32 characters.")
+SECRET_KEY = (
+    hashlib.sha512(secret_key_seed.encode()).hexdigest()
+    if secret_key_seed
+    else os.environ.get("SECRET_KEY", DEVELOPMENT_SECRET_KEY)
+)
 if not DEBUG and SECRET_KEY == DEVELOPMENT_SECRET_KEY:
-    raise ImproperlyConfigured("Set SECRET_KEY before starting in production mode.")
+    raise ImproperlyConfigured(
+        "Set SECRET_KEY or SECRET_KEY_SEED before starting in production mode."
+    )
+if not DEBUG and (
+    len(SECRET_KEY) < 50
+    or len(set(SECRET_KEY)) < 5
+    or SECRET_KEY.startswith("django-insecure-")
+):
+    raise ImproperlyConfigured("SECRET_KEY must be long, random, and production-safe.")
 
 ALLOWED_HOSTS = env_list(
     "DJANGO_ALLOWED_HOSTS",

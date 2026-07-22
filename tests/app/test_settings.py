@@ -16,6 +16,7 @@ PRODUCTION_ENV_KEYS = {
     "RENDER",
     "RENDER_EXTERNAL_HOSTNAME",
     "SECRET_KEY",
+    "SECRET_KEY_SEED",
 }
 
 
@@ -39,6 +40,7 @@ print(json.dumps({
     "middleware": settings.MIDDLEWARE,
     "proxy_header": settings.SECURE_PROXY_SSL_HEADER,
     "secure_redirect": settings.SECURE_SSL_REDIRECT,
+    "secret_key_length": len(settings.SECRET_KEY),
     "session_cookie_secure": settings.SESSION_COOKIE_SECURE,
     "static_backend": settings.STORAGES["staticfiles"]["BACKEND"],
     "static_root": str(settings.STATIC_ROOT),
@@ -74,7 +76,7 @@ def test_production_requires_a_secret_key():
     )
 
     assert result.returncode != 0
-    assert "Set SECRET_KEY before starting in production mode." in result.stderr
+    assert "Set SECRET_KEY or SECRET_KEY_SEED before starting" in result.stderr
 
 
 def test_production_requires_an_allowed_host():
@@ -89,12 +91,25 @@ def test_production_requires_an_allowed_host():
     assert "Set DJANGO_ALLOWED_HOSTS or RENDER_EXTERNAL_HOSTNAME" in result.stderr
 
 
+def test_production_rejects_a_weak_direct_secret():
+    result = load_settings(
+        {
+            "DJANGO_ALLOWED_HOSTS": "film-reviews.example.com",
+            "DJANGO_DEBUG": "false",
+            "SECRET_KEY": "too-short",
+        }
+    )
+
+    assert result.returncode != 0
+    assert "SECRET_KEY must be long, random, and production-safe." in result.stderr
+
+
 def test_render_hostname_enables_production_security_and_csrf_origin():
     result = load_settings(
         {
             "RENDER": "true",
             "RENDER_EXTERNAL_HOSTNAME": "film-reviews.onrender.com",
-            "SECRET_KEY": "production-secret-" + "x" * 60,
+            "SECRET_KEY_SEED": "render-generated-256-bit-seed-xxxxxxxxxxxxxxxx",
         }
     )
 
@@ -108,6 +123,7 @@ def test_render_hostname_enables_production_security_and_csrf_origin():
     assert loaded["session_cookie_secure"] is True
     assert loaded["csrf_cookie_secure"] is True
     assert loaded["hsts_seconds"] == 31_536_000
+    assert loaded["secret_key_length"] == 128
     assert loaded["middleware"][:2] == [
         "django.middleware.security.SecurityMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -152,8 +168,10 @@ def test_render_blueprint_and_build_script_define_release_process():
     build_script = build_script_path.read_text()
 
     assert "runtime: python" in blueprint
+    assert "repo: https://github.com/niconico252525/film-reviews" in blueprint
     assert "startCommand: gunicorn app.wsgi:application" in blueprint
     assert "healthCheckPath: /" in blueprint
+    assert "- key: SECRET_KEY_SEED" in blueprint
     assert "generateValue: true" in blueprint
     assert "property: connectionString" in blueprint
     assert "ipAllowList: []" in blueprint
