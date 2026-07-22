@@ -53,9 +53,10 @@ compressed, content-versioned static assets collected under `STATIC_ROOT`.
 ### Requirement: Reproducible Render infrastructure
 
 The repository MUST define a Render Python web service and private PostgreSQL
-database as a Blueprint. The service MUST receive a generated secret and the
-database connection through environment variables, use a compatible Python
-version, bind to the assigned port, and expose an HTTP health-check path.
+database as a Blueprint. The service MUST receive a generated secret seed and
+the database connection through environment variables, derive a Django secret
+that passes deployment checks, use a compatible Python version, bind to the
+assigned port, and expose an HTTP health-check path.
 
 #### Scenario: Create a Blueprint instance
 

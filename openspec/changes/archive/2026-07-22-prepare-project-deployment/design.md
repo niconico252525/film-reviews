@@ -33,8 +33,10 @@ static assets, a process manager, and a repeatable deployment definition.
 
 A repository-level `render.yaml` Blueprint defines one Python web service and
 one Render PostgreSQL database in the Singapore region. The service tracks
-`main`, performs health checks against `/`, generates `SECRET_KEY`, and receives
-the database's private connection string without storing credentials in Git.
+`main`, performs health checks against `/`, generates `SECRET_KEY_SEED`, and
+receives the database's private connection string without storing credentials
+in Git. Django expands the platform's 256-bit generated seed through SHA-512 so
+the effective secret also satisfies Django's deployment length check.
 The initial free plan is suitable for this exercise; production owners can
 change plan sizes without changing application code.
 

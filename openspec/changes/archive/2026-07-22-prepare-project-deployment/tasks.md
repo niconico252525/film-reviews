@@ -14,5 +14,5 @@
 
 - [x] 3.1 Run unit tests, Django checks including `--deploy`, migration checks, Ruff, static collection, and strict OpenSpec validation.
 - [x] 3.2 Start Gunicorn with production-mode settings and verify an HTTP response plus WhiteNoise static delivery.
-- [ ] 3.3 Review the final change, archive OpenSpec, and complete the GitHub PR workflow.
-- [ ] 3.4 Create the Render Blueprint instance, verify the public deployment, and record its URL.
+- [x] 3.3 Review the final change, archive OpenSpec, and complete the GitHub PR workflow.
+- [x] 3.4 Create the Render Blueprint instance, verify the public deployment, and record its URL.

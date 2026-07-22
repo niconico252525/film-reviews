@@ -2,6 +2,7 @@ services:
   - type: web
     name: film-reviews
     runtime: python
+    repo: https://github.com/niconico252525/film-reviews
     plan: free
     region: singapore
     branch: main
@@ -14,7 +15,7 @@ services:
         fromDatabase:
           name: film-reviews-db
           property: connectionString
-      - key: SECRET_KEY
+      - key: SECRET_KEY_SEED
         generateValue: true
       - key: DJANGO_DEBUG
         value: "false"
