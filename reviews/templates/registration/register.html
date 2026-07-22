@@ -3,13 +3,21 @@
 {% block title %}Create account | Film Reviews{% endblock %}
 
 {% block content %}
-<h1>Create account</h1>
+<div class="page-narrow">
+    <header class="page-heading">
+        <p class="eyebrow">Join the conversation</p>
+        <h1>Create account</h1>
+        <p>Save your perspective by creating a free account.</p>
+    </header>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create account</button>
-</form>
-
-<p>Already registered? <a href="{% url 'login' %}">Log in</a>.</p>
+    <section class="surface" aria-label="Account registration form">
+        <p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
+        <form class="stacked-form" method="post">
+            {% csrf_token %}
+            {% include "reviews/includes/form_fields.html" with form=form %}
+            <button class="button button--primary button--full" type="submit">Create account</button>
+        </form>
+        <p class="surface__footer">Already registered? <a href="{% url 'login' %}">Log in</a>.</p>
+    </section>
+</div>
 {% endblock %}

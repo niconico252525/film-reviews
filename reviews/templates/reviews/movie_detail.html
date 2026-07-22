@@ -3,37 +3,62 @@
 {% block title %}{{ movie.title }} | Film Reviews{% endblock %}
 
 {% block content %}
-<article>
-    <h1>{{ movie.title }}</h1>
-    {% if movie.release_date %}
-        <p>Released {{ movie.release_date|date:"Y-m-d" }}</p>
-    {% endif %}
-    <p>{{ movie.synopsis|default:"No synopsis is available." }}</p>
-    <p>
-        Average rating:
-        {% if average_rating is not None %}
-            {{ average_rating|floatformat:1 }}/5
+<article class="movie-detail">
+    <div class="movie-detail__art" aria-hidden="true">{{ movie.title|first|upper }}</div>
+    <div class="movie-detail__content">
+        {% if movie.release_date %}
+            <p class="eyebrow">Released <time datetime="{{ movie.release_date|date:'Y-m-d' }}">{{ movie.release_date|date:"F j, Y" }}</time></p>
         {% else %}
-            Not yet rated
+            <p class="eyebrow">Release date unknown</p>
         {% endif %}
-    </p>
+        <h1>{{ movie.title }}</h1>
+        <p class="movie-detail__synopsis">{{ movie.synopsis|default:"No synopsis is available." }}</p>
+
+        <div class="rating-panel" aria-label="Average movie rating">
+            <span class="rating-panel__label">Average rating</span>
+            {% if average_rating is not None %}
+                <strong class="rating-panel__value">{{ average_rating|floatformat:1 }}/5</strong>
+            {% else %}
+                <strong class="rating-panel__empty">Not yet rated</strong>
+            {% endif %}
+        </div>
+
+        <div class="action-group">
+            {% if user.is_authenticated %}
+                <a class="button button--primary" href="{% url 'reviews:review_create' movie.id %}">Write or update your review</a>
+            {% else %}
+                <a class="button button--primary" href="{% url 'login' %}?next={% url 'reviews:review_create' movie.id %}">Log in to review</a>
+                <a class="button button--secondary" href="{% url 'reviews:register' %}">Create account</a>
+            {% endif %}
+        </div>
+    </div>
 </article>
 
-{% if user.is_authenticated %}
-    <p><a href="{% url 'reviews:review_create' movie.id %}">Write or update your review</a></p>
-{% else %}
-    <p><a href="{% url 'login' %}?next={% url 'reviews:review_create' movie.id %}">Log in to review this movie</a></p>
-{% endif %}
+<section class="section-block" aria-labelledby="reviews-heading">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Viewer perspectives</p>
+            <h2 id="reviews-heading">Reviews</h2>
+        </div>
+    </div>
 
-<section>
-    <h2>Reviews</h2>
-    {% for review in reviews %}
-        <article>
-            <h3>{{ review.author.username }} — {{ review.rating }}/5</h3>
-            <p>{{ review.body }}</p>
-        </article>
-    {% empty %}
-        <p>No reviews yet.</p>
-    {% endfor %}
+    <ol class="review-list">
+        {% for review in reviews %}
+            <li>
+                <article class="review-card">
+                    <header class="review-card__header">
+                        <div>
+                            <h3>{{ review.author.username }}</h3>
+                            <p><time datetime="{{ review.created_at|date:'c' }}">{{ review.created_at|date:"F j, Y" }}</time></p>
+                        </div>
+                        <strong class="rating-badge" aria-label="Rated {{ review.rating }} out of 5">{{ review.rating }}/5</strong>
+                    </header>
+                    <p class="review-card__body">{{ review.body|linebreaksbr }}</p>
+                </article>
+            </li>
+        {% empty %}
+            <li class="empty-state">No reviews yet. Be the first to share your thoughts.</li>
+        {% endfor %}
+    </ol>
 </section>
 {% endblock %}
