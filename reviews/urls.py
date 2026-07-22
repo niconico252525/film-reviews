@@ -6,6 +6,7 @@ app_name = "reviews"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("accounts/register/", views.register_account, name="register"),
     path("movies/", views.movie_list, name="movie_list"),
     path("movies/<int:movie_id>/", views.movie_detail, name="movie_detail"),
     path(

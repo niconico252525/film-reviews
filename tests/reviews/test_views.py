@@ -43,6 +43,7 @@ def test_movie_list_renders_all_movies(client, movie):
     assert response.status_code == 200
     assert list(response.context["movies"]) == [another_movie, movie]
     assert response.context["query"] == ""
+    assert not response.context["search_form"].is_bound
 
 
 def test_movie_list_filters_by_trimmed_case_insensitive_query(client, movie):
@@ -54,6 +55,21 @@ def test_movie_list_filters_by_trimmed_case_insensitive_query(client, movie):
     assert list(response.context["movies"]) == [movie]
     assert response.context["query"] == "SPIRIT"
     assert b"Alien" not in response.content
+
+
+def test_movie_list_rejects_oversized_query_without_returning_movies(client, movie):
+    response = client.get(reverse("reviews:movie_list"), {"q": "x" * 256})
+
+    assert response.status_code == 200
+    assert response.context["movies"] == ()
+    assert "q" in response.context["search_form"].errors
+    assert movie.title.encode() not in response.content
+
+
+def test_movie_list_rejects_post_requests(client):
+    response = client.post(reverse("reviews:movie_list"), {"q": "Alien"})
+
+    assert response.status_code == 405
 
 
 def test_movie_detail_renders_rating_and_reviews(client, movie, user):
@@ -160,7 +176,7 @@ def test_invalid_review_post_redisplays_errors_without_writing(client, movie, us
 
     response = client.post(
         reverse("reviews:review_create", args=[movie.pk]),
-        {"rating": "6", "body": ""},
+        {"rating": "6", "body": "   "},
     )
 
     assert response.status_code == 200
@@ -183,6 +199,72 @@ def test_login_page_is_runnable(client):
     assert "registration/login.html" in [
         template.name for template in response.templates
     ]
+
+
+def test_registration_page_renders_form_and_shared_navigation(client):
+    response = client.get(reverse("reviews:register"))
+
+    assert response.status_code == 200
+    assert "registration/register.html" in [
+        template.name for template in response.templates
+    ]
+    assert b"Create account" in response.content
+    assert b'name="email"' in response.content
+
+
+def test_valid_registration_creates_and_signs_in_user(client):
+    response = client.post(
+        reverse("reviews:register"),
+        {
+            "username": "new-reviewer",
+            "email": "reviewer@example.com",
+            "password1": "X9!mQ2#vL7$p",
+            "password2": "X9!mQ2#vL7$p",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.url == reverse("reviews:home")
+    registered_user = get_user_model().objects.get(username="new-reviewer")
+    assert registered_user.email == "reviewer@example.com"
+    assert client.session["_auth_user_id"] == str(registered_user.pk)
+
+
+def test_invalid_registration_redisplays_errors_without_creating_user(client, user):
+    response = client.post(
+        reverse("reviews:register"),
+        {
+            "username": user.username,
+            "email": "not-an-email",
+            "password1": "X9!mQ2#vL7$p",
+            "password2": "different-password",
+        },
+    )
+
+    assert response.status_code == 200
+    assert set(response.context["form"].errors) == {
+        "username",
+        "email",
+        "password2",
+    }
+    assert get_user_model().objects.count() == 1
+    assert b"not-an-email" in response.content
+    assert b"X9!mQ2#vL7$p" not in response.content
+
+
+def test_authenticated_user_is_redirected_away_from_registration(client, user):
+    client.force_login(user)
+
+    response = client.get(reverse("reviews:register"))
+
+    assert response.status_code == 302
+    assert response.url == reverse("reviews:home")
+
+
+def test_registration_rejects_unsupported_http_method(client):
+    response = client.put(reverse("reviews:register"))
+
+    assert response.status_code == 405
 
 
 def test_logout_redirects_home(client, user):

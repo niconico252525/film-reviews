@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.contrib.auth import get_user_model
 from django.db.models import Avg
 
 from reviews.models import Movie, Review
@@ -17,6 +18,15 @@ def search_movies(query: str = ""):
     if query:
         movies = movies.filter(title__icontains=query)
     return movies
+
+
+def register_user(*, username: str, email: str, password: str):
+    """Create a user from values that passed registration-form validation."""
+    return get_user_model().objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+    )
 
 
 def get_movie_average_rating(movie: Movie) -> Optional[float]:
